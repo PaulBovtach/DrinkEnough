@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @AppStorage("hasPassedTest") var hasPassedTest = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        
+        if !hasPassedTest {
+            TestView()
+        }else {
+            WaterView()
         }
-        .padding()
+        
     }
 }
 
