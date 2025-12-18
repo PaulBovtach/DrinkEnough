@@ -10,6 +10,7 @@ import SwiftUI
 struct TestView: View {
     @AppStorage("hasPassedTest") var hasPassedTest = false
     @AppStorage("cupsEstimated") var cupsAmount = 0
+    @AppStorage("consumedStored") var consumedCupsStored = 0
     
     @State private var age = 18
     @State private var weight = 50
@@ -76,7 +77,11 @@ struct TestView: View {
         }
         .alert("Your daily consume is", isPresented: $isResultPresented, actions: {
             Button("OK"){
-                hasPassedTest = true
+                withAnimation {
+                    consumedCupsStored = 0
+                    hasPassedTest = true
+                }
+                
             }
         }, message: {
             Text("\(cupsAmount) cups")
