@@ -16,8 +16,6 @@ struct Wave: Shape {
         var path = Path()
         let width = rect.width
         let height = rect.height
-        
-        // 1. Change this to 0 to start the water at the top of the view
         let topEdge = 0.0
         
         path.move(to: CGPoint(x: 0, y: topEdge))
@@ -25,13 +23,10 @@ struct Wave: Shape {
         for x in stride(from: 0, through: width, by: 1) {
             let relativeX = x / waveLength
             let sine = sin(relativeX * .pi * 2 + offset.radians)
-            
-            // 2. Wave now oscillates around the top edge
             let y = topEdge + sine * amplitude
             path.addLine(to: CGPoint(x: x, y: y))
         }
         
-        // 3. This ensures the color fills the entire screen height
         path.addLine(to: CGPoint(x: width, y: height))
         path.addLine(to: CGPoint(x: 0, y: height))
         path.closeSubpath()
@@ -45,17 +40,19 @@ struct WaterView: View {
     @AppStorage("cupsEstimated") var cupsAmount = 0
     @AppStorage("consumedStored") var consumedCupsStored = 0
     @AppStorage("hasPassedTest") var hasPassedTest = false
+    @AppStorage("lastOpenedDate") var lastOpenDate: Double = 0
+    
     
     @State private var consumedCups = 0
     @State private var showSuccess = false
     
     var waveHeight: Double {
-        guard consumedCups > 0 else { return 970 }
+        guard consumedCups > 0 else { return 820 }
         
         let remaining = cupsAmount - consumedCups
         let ratio = Double(remaining) / Double(cupsAmount)
         
-        return (1000.0 * ratio)
+        return (870.0 * ratio)
     }
     
     var body: some View {
@@ -78,11 +75,15 @@ struct WaterView: View {
                                 .fill(Color.blue)
                         }
                     }
-                    .frame(maxHeight: 1000 - waveHeight) //adjust
+                    .frame(maxHeight: 870 - waveHeight) //adjust
                     .ignoresSafeArea(edges: .bottom)
                 }
                 .onAppear{
                     consumedCups = consumedCupsStored
+                }
+                .onAppear{
+                        resetCounter()
+                        consumedCups = consumedCupsStored
                 }
                 .onChange(of: consumedCups) {
                         consumedCupsStored = consumedCups
@@ -158,11 +159,20 @@ struct WaterView: View {
         } message: {
             Text("You finished your daily plan of water consume!")
         }
-        
-        
-        
-        
     }
+    
+    func resetCounter() {
+        let calendar = Calendar.current
+        let now = Date()
+        let lastDate = Date(timeIntervalSince1970: lastOpenDate)
+        
+        if !calendar.isDate(now, inSameDayAs: lastDate) {
+            consumedCupsStored = 0
+        }
+        
+        lastOpenDate = now.timeIntervalSince1970
+    }
+    
 }
 
 #Preview {
