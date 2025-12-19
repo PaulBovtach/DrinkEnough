@@ -41,6 +41,7 @@ struct WaterView: View {
     @AppStorage("consumedStored") var consumedCupsStored = 0
     @AppStorage("hasPassedTest") var hasPassedTest = false
     @AppStorage("lastOpenedDate") var lastOpenDate: Double = 0
+    @AppStorage("hasFilled") var hasFilled = false
     
     
     @State private var consumedCups = 0
@@ -87,9 +88,11 @@ struct WaterView: View {
                 }
                 .onChange(of: consumedCups) {
                         consumedCupsStored = consumedCups
+                    
                     if (cupsAmount - consumedCups) == 0 {
-                        showSuccess = true
+                        hasFilled = true
                     }
+                    
                 }
                 .ignoresSafeArea()
                 
@@ -102,7 +105,10 @@ struct WaterView: View {
                                 consumedCupsStored = consumedCups
                             }
                         }else{
-                            showSuccess = true
+                            withAnimation {
+                                hasFilled = true
+
+                            }
                         }
                         
                     }label: {
@@ -168,6 +174,7 @@ struct WaterView: View {
         
         if !calendar.isDate(now, inSameDayAs: lastDate) {
             consumedCupsStored = 0
+            hasFilled = true
         }
         
         lastOpenDate = now.timeIntervalSince1970

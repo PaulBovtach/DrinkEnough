@@ -9,11 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage("hasPassedTest") var hasPassedTest = false
+    @AppStorage("hasFilled") var hasFilled = false
     
     var body: some View {
         
         if !hasPassedTest {
             TestView()
+        }else if hasPassedTest && hasFilled{
+            SuccessView()
         }else {
             WaterView()
         }
